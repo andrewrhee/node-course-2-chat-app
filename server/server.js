@@ -10,7 +10,6 @@ var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
 
-// Middleware
 app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
@@ -20,9 +19,10 @@ io.on('connection', (socket) => {
 
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
 
-  socket.on('createMessage', (message) => {
+  socket.on('createMessage', (message, callback) => {
     console.log('createMessage', message);
     io.emit('newMessage', generateMessage(message.from, message.text));
+    callback('This is from the server.');
     // socket.broadcast.emit('newMessage', {
     //   from: message.from,
     //   text: message.text,
@@ -31,7 +31,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('User disconnected');
+    console.log('User was disconnected');
   });
 });
 
